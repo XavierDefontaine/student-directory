@@ -26,6 +26,14 @@ students.each do |student|
   end
 end
 
+def print_loop(students)
+num = 0
+  while num < students.size do
+    puts students[num][:name]
+    num += 1
+  end
+end
+
 def print_by_name(students)
 puts "Which students Last Name first letter do you want displayed?"
 letter_input = gets.chomp
@@ -38,9 +46,10 @@ end
 
 def print_names_shorter_than_twelve(students)
 puts "Here is a list of students whose last name is shorter than 12 characters?"
-students.find_all {|student|
-    
-}
+students.find_all do |student| 
+  if student[:name].split(' ').last.size < 12
+    puts student[:name]
+  end
 end
 
 def print_count(names)
