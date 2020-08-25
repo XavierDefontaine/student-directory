@@ -23,6 +23,19 @@ num = 0
   end
 end
 
+def print_by_cohort(students)
+  cohort_list = students.map { |student| student[:cohort].capitalize }.uniq
+puts "Which cohort from the list?"
+puts "#{cohort_list} \n"
+  cohort_month = gets.delete("\n").capitalize.to_sym
+puts "Ok, so here are all the students from #{cohort_month}"
+  students.each_with_index do |student, index|
+    if cohort_month == student[:cohort]
+      puts "#{student[:name]}"
+    end
+  end
+end
+
 def print_by_name(students)
 puts "Which students Last Name first letter do you want displayed?"
 letter_input = gets.delete("
@@ -42,17 +55,13 @@ students.find_all do |student|
   end
 end
 end
+@students = []
 
 def input_students
 puts "Please enter a name of the students"
 puts "To finish, just hit return twice"
-# creates an empty array
-students = []
-# get the first name
 name = gets.delete("\n").downcase.capitalize
-  # while the name is not empty, repeat this code
   while !name.empty? do
-    # add the student hash to the array
     puts "which cohort?"
     cohort = gets.delete("\n").capitalize
     if cohort.empty?
@@ -60,13 +69,10 @@ name = gets.delete("\n").downcase.capitalize
     end
     puts "which nationality?"
     nationality = gets.delete("\n").downcase.capitalize
-    students << {name: name, cohort: cohort.to_sym, nationality: nationality.to_sym}
-    puts "Now we have #{students.count} students"
-    # get another name from the user
+    @students << {name: name, cohort: cohort.to_sym, nationality: nationality.to_sym}
+    puts "Now we have #{@students.count} students"
     name = gets.delete("\n")
   end
-# return the array of students
-students
 end
 
 def print_header
@@ -74,35 +80,47 @@ puts "The students of Villains Academy"
 puts "-------------"
 end
 
-def print(students)
-students.each_with_index do |student, index|
+def print_student_names
+@students.each_with_index do |student, index|
   puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, from #{student[:nationality]})".center(30)
   end
 end
 
-def print_by_cohort(students)
-  cohort_list = students.map { |student| student[:cohort].capitalize }.uniq
-puts "Which cohort from the list?"
-puts "#{cohort_list} \n"
-  cohort_month = gets.delete("
-").capitalize.to_sym
-puts "Ok, here are all the students from #{cohort_month}"
-  students.each_with_index do |student, index|
-    if cohort_month == student[:cohort]
-      puts "#{student[:name]}"
-    end
+def print_count
+puts "Overall, we have #{@students.count} great student" 
++ "s" if @students.count > 1
+end
+
+def interactive_menu
+  loop do
+    print_menu
+    process(gets.chomp)
   end
 end
 
-
-def print_count(students)
-puts "Overall, we have #{students.count} great student" 
-+ "s" if students.count > 1
+def print_menu
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "9. Exit" # 9 because we'll be adding more items  
 end
 
+def show_students
+  print_header
+  print_student_names
+  print_count
+end
 
-#nothing happens until we call the methods
-students = input_students
-print_header
-print_by_cohort(students)
-print_count(students)
+def process(selection)
+  case selection
+    when "1"
+      input_students
+    when "2"
+      show_students
+    when "9"
+      exit
+    else
+      puts "I don't know what you mean, try again"
+  end
+end
+
+interactive_menu
