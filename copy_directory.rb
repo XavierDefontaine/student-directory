@@ -19,8 +19,12 @@ puts "-------------"
 end
 
 def print(students)
-students.each do |student|
-  puts "#{student[:name]} (#{student[:cohort]} cohort)"
+puts "which student first name letter do you want displayed?"
+letter_input = gets.chomp
+students.each_with_index do |student, index|
+    if letter_input == student[:name].split(' ').last.chr
+      puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort)"
+    end
   end
 end
 
@@ -46,6 +50,7 @@ name = gets.chomp
 # return the array of students
 students
 end
+
 #nothing happens until we call the methods
 students = input_students
 print_header
