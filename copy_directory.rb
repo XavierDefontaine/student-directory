@@ -13,19 +13,34 @@ students = [
   {name: "Norman Bates", cohort: :november}
   ]
 
+
+
 def print_header
 puts "The students of Villains Academy"
 puts "-------------"
 end
 
 def print(students)
-puts "which student first name letter do you want displayed?"
+students.each do |student|
+  puts "#{student[:name]} (#{student[:cohort]} cohort)"
+  end
+end
+
+def print_by_name(students)
+puts "Which students Last Name first letter do you want displayed?"
 letter_input = gets.chomp
 students.each_with_index do |student, index|
     if letter_input == student[:name].split(' ').last.chr
       puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort)"
     end
   end
+end
+
+def print_names_shorter_than_twelve(students)
+puts "Here is a list of students whose last name is shorter than 12 characters?"
+students.find_all {|student|
+    
+}
 end
 
 def print_count(names)
@@ -50,6 +65,7 @@ name = gets.chomp
 # return the array of students
 students
 end
+
 
 #nothing happens until we call the methods
 students = input_students
