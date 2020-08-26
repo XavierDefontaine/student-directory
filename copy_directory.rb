@@ -15,80 +15,21 @@ students = [
   ]
 =end 
 
-def print_loop(students)
-num = 0
-  while num < students.size do
-    puts students[num][:name]
-    num += 1
-  end
-end
-
-def print_by_cohort(students)
-  cohort_list = students.map { |student| student[:cohort].capitalize }.uniq
-puts "Which cohort from the list?"
-puts "#{cohort_list} \n"
-  cohort_month = gets.delete("\n").capitalize.to_sym
-puts "Ok, so here are all the students from #{cohort_month}"
-  students.each_with_index do |student, index|
-    if cohort_month == student[:cohort]
-      puts "#{student[:name]}"
-    end
-  end
-end
-
-def print_by_name(students)
-puts "Which students Last Name first letter do you want displayed?"
-letter_input = gets.delete("
-")
-students.each_with_index do |student, index|
-    if letter_input == student[:name].split(' ').last.chr
-      puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, from #{student[:nationality]})"
-    end
-  end
-end
-
-def print_names_shorter_than_twelve(students)
-puts "Here is a list of students whose last name is shorter than 12 characters?"
-students.find_all do |student| 
-  if student[:name].split(' ').last.size < 12
-    puts student[:name]
-  end
-end
-end
-@students = []
+@students = [] # an empty array accessible to all methods
 
 def input_students
-puts "Please enter a name of the students"
-puts "To finish, just hit return twice"
-name = gets.delete("\n").downcase.capitalize
+  puts "Please enter the names of the students"
+  puts "To finish, just hit return twice"
+  # get the first name
+  name = gets.chomp
+  # while the name is not empty, repeat this code
   while !name.empty? do
-    puts "which cohort?"
-    cohort = gets.delete("\n").capitalize
-    if cohort.empty?
-    cohort = "november"
-    end
-    puts "which nationality?"
-    nationality = gets.delete("\n").downcase.capitalize
-    @students << {name: name, cohort: cohort.to_sym, nationality: nationality.to_sym}
+    # add the student hash to the array
+    @students << {name: name, cohort: :november}
     puts "Now we have #{@students.count} students"
-    name = gets.delete("\n")
+    # get another name from the user
+    name = gets.chomp
   end
-end
-
-def print_header
-puts "The students of Villains Academy"
-puts "-------------"
-end
-
-def print_student_names
-@students.each_with_index do |student, index|
-  puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort, from #{student[:nationality]})".center(30)
-  end
-end
-
-def print_count
-puts "Overall, we have #{@students.count} great student" 
-+ "s" if @students.count > 1
 end
 
 def interactive_menu
@@ -101,26 +42,55 @@ end
 def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
-  puts "9. Exit" # 9 because we'll be adding more items  
+  puts "3. Save the list to students.csv"
+  puts "9. Exit" # 9 because we'll be adding more items
 end
 
 def show_students
   print_header
-  print_student_names
-  print_count
+  print_student_list
+  print_footer
 end
+
+def save_students
+  file = File.open("students.csv", "w")
+  @students.each do |student|
+  student_data = [student[:name], student[:cohort]]
+  csv_line = student_data.join(",")
+  file.puts csv_line
+  end
+ file.close
+end
+
 
 def process(selection)
   case selection
-    when "1"
-      input_students
-    when "2"
-      show_students
-    when "9"
-      exit
-    else
-      puts "I don't know what you mean, try again"
+  when "1"
+    input_students
+  when "2"
+    show_students
+  when "3"
+    save_students
+  when "9"
+    exit # this will cause the program to terminate
+  else
+    puts "I don't know what you meant, try again"
   end
+end
+
+def print_header
+  puts "The students of Villains Academy"
+  puts "-------------"
+end
+
+def print_student_list
+  @students.each do |student|
+    puts "#{student[:name]} (#{student[:cohort]} cohort)"
+  end
+end
+
+def print_footer
+  puts "Overall, we have #{@students.count} great students"
 end
 
 interactive_menu
