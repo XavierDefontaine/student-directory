@@ -1,50 +1,48 @@
-# let's put all students into an array
-=begin
-students = [
-  {name: "Dr. Hannibal Lecter", cohort: :november, nationality: :french},
-  {name: "Darth Vader", cohort: :november, nationality: :british},
-  {name: "Nurse Ratched", cohort: :november, nationality: :french},
-  {name: "Michael Corleone", cohort: :november, nationality: :british},
-  {name: "Alex DeLarge", cohort: :november, nationality: :italian},
-  {name: "The Wicked Witch of the West", cohort: :november, nationality: :spanish},
-  {name: "Terminator", cohort: :november, nationality: :french},
-  {name: "Freddy Krueger", cohort: :november, nationality: :british},
-  {name: "The Joker", cohort: :november, nationality: :american},
-  {name: "Joffrey Baratheon", cohort: :november, nationality: :brazilian},
-  {name: "Norman Bates", cohort: :november, nationality: :romanian}
-  ]
-=end 
+@students = []
 
-@students = [] # an empty array accessible to all methods
+def add_students_to_array
+@students << {name: @name, cohort: @cohort.to_sym}
+end
 
-def input_students
-  puts "Please enter the names of the students"
+def input_student
+  puts "\nPlease enter the names of the students"
   puts "To finish, just hit return twice"
-  # get the first name
-  name = gets.chomp
-  # while the name is not empty, repeat this code
-  while !name.empty? do
-    # add the student hash to the array
-    @students << {name: name, cohort: :november}
-    puts "Now we have #{@students.count} students"
-    # get another name from the user
-    name = gets.chomp
+  @name = STDIN.gets.chomp
+  while !@name.empty? do
+    print "cohort? "
+    @cohort = STDIN.gets.chomp
+    add_students
+    puts "Now we have #{@students.count} students.\n"
+    print "You can add another if you like: "
+    @name = STDIN.gets.chomp
+  end
+end
+
+def try_load_students(filename = "students.csv")
+  filename = ARGV.first # first argument from the command line
+  return if filename.nil? # get out of the method if it isn't given
+  if File.exists?(filename) # if it exists
+    load_students(filename)
+     puts "Loaded #{@students.count} student files from #{filename}"
+  else # if it doesn't exist
+    puts "Sorry, #{filename} doesn't exist."
+    exit # quit the program
   end
 end
 
 def interactive_menu
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
 def print_menu
-  puts "1. Input the students"
+  puts "\n1. Input the students"
   puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "4. Load students"
-  puts "9. Exit" # 9 because we'll be adding more items
+  puts "3. Save the list of students"
+  puts "4. Load students from specific file"
+  puts "9. Exit" 
 end
 
 def show_students
@@ -53,8 +51,8 @@ def show_students
   print_footer
 end
 
-def save_students
-  file = File.open("students.csv", "w")
+def save_students(filename)
+  file = File.open(filename, "w")
   @students.each do |student|
   student_data = [student[:name], student[:cohort]]
   csv_line = student_data.join(",")
@@ -63,11 +61,11 @@ def save_students
   file.close
 end
 
-def load_students
-  file = File.open("students.csv", "r")
+def load_students(filename = "students.csv")
+  file = File.open(filename, "r")
   file.readlines.each do |line|
-  name, cohort = line.chomp.split(",")
-    @students << {name: name, cohort: cohort.to_sym}
+    @name, @cohort = line.chomp.split(',')
+    add_students
   end
   file.close
 end
@@ -79,29 +77,34 @@ def process(selection)
   when "2"
     show_students
   when "3"
-    save_students
+    puts "What do you want the file called?"
+    save_students(gets.chomp + ".csv")
+    puts "All saved for you.\n"
   when "4"
-    load_students
+    puts "Please enter file to load students from?"
+    load_students(gets.chomp + ".csv")
+    puts "brrrrr, soo loaded right now.\n"
   when "9"
-    exit # this will cause the program to terminate
+    exit 
   else
     puts "I don't know what you meant, try again"
   end
 end
 
 def print_header
-  puts "The students of Villains Academy"
-  puts "-------------"
+  puts "\nThe students of Villains Academy"
+  puts "---------------------------------"
 end
 
 def print_student_list
   @students.each do |student|
-    puts "#{student[:name]} (#{student[:cohort]} cohort)"
+    puts "      #{student[:name]} (#{student[:cohort]} cohort)"
   end
 end
 
 def print_footer
-  puts "Overall, we have #{@students.count} great students"
+  puts "Overall, we have #{@students.count} great students.\n"
 end
 
+try_load_students
 interactive_menu
