@@ -1,17 +1,17 @@
+require 'csv'
+
 @students = Array.new
 
-def try_load_students(filename = "students.csv")
-  filename = ARGV.first # first argument from the command line
+def try_load_students
+  filename = ARGV.first || "students.csv"
   return if filename.nil? # get out of the method if it isn't given
   if File.exists?(filename) # if it exists
     load_students(filename)
-     puts "Loaded #{@students.count} student files from #{filename}"
   else # if it doesn't exist
     puts "Sorry, #{filename} doesn't exist."
     exit # quit the program
   end
 end
-
 
 def add_students_to_array
 @students << {name: @name, cohort: @cohort.to_sym}
@@ -53,34 +53,23 @@ def show_students
 end
 
 def load_students(filename = "students.csv")
-  if !filename.empty?
-    @students = []
-  File.foreach(filename) do |line|
-    @name, @cohort = line.chomp.split(',')
-    add_students_to_array
-  end
-  end
+return puts "file doesn't exist" if !File.exist?(filename)
+if !filename.empty?
+  @students = []
+  CSV.foreach(filename) do |row|
+  @name, @cohort = row
+  add_students_to_array
+ end
+  puts "Loaded #{@students.count} student files from #{filename}"
+end
 end
 
-=begin
 def save_students(filename)
-  file = File.open(filename, "w")
-  @students.each do |student|
-  student_data = [student[:name], student[:cohort]]
-  csv_line = student_data.join(",")
-  file.puts csv_line
+  CSV.open(filename, "w") do |file| 
+  @students.each do |student| 
+  file << [student[:name], student[:cohort]]
   end
-  file.close
-end
-=end
-
-
-
-def save_students(filename)
-  File.open(filename, "w") { |file| 
-  file.write @students.map { |student| 
-  [student[:name], student[:cohort]].join(",")}.join("\n")
-  }
+ end
 end
 
 def process(selection)
@@ -96,7 +85,6 @@ def process(selection)
   when "4"
     puts "Please enter file to load students from?"
     load_students(gets.chomp)
-    puts "brrrrr, soo loaded right now.\n"
   when "9"
     exit 
   else
