@@ -1,1 +1,1 @@
-puts File.read(__FILE__)
+p File.basename(File.open(__FILE__, "r"))
